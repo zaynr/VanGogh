@@ -1,3 +1,8 @@
+# build dir
+.vscode/
+build/
+output/
+
 # Prerequisites
 *.d
 
@@ -5,7 +10,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch

@@ -1,0 +1,49 @@
+project(LearnOpenGL C CXX)
+cmake_minimum_required(VERSION 3.18)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
+
+# compile setting
+set(CXX_FLAGS_PROJECT "-Wall -fPIC")
+set(MODULE_LINKER_FLAGS_PROJECT)
+set(SHARED_LINKER_FLAGS_PROJECT)
+set(STATIC_LINKER_FLAGS_PROJECT)
+set(EXE_LINKER_FLAGS_PROJECT)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS_PROJECT}")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${MODULE_LINKER_FLAGS_PROJECT}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_PROJECT}")
+set(CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} ${STATIC_LINKER_FLAGS_PROJECT}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EXE_LINKER_FLAGS_PROJECT}")
+
+# include path
+configure_file(${CMAKE_HOME_DIRECTORY}/configuration/root_directory.h.in configuration/root_directory.h)
+set(PROJECT_INC_DIR
+    ${CMAKE_HOME_DIRECTORY}/inc
+    ${CMAKE_BINARY_DIR}/configuration
+    /usr/local/include
+    )
+
+# CMAKE_SOURCE_DIR
+include_directories(${PROJECT_INC_DIR})
+
+# ld path
+set(PROJECT_LINK_DIR
+    ${CMAKE_HOME_DIRECTORY}/lib
+    /usr/local/lib
+    )
+
+link_directories(${PROJECT_LINK_DIR})
+
+# ld lib
+set(PROJECT_DEPENDENCY
+    pthread
+    )
+
+# output path
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output/bin)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output/lib)
+
+add_subdirectory(src)
