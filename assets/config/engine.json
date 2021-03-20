@@ -1,0 +1,24 @@
+{
+    "models": [
+        {
+            "name": "mary",
+            "path": "assets/model/mary/Marry.obj"
+        },
+        {
+            "name": "rock",
+            "path": "assets/model/rock/rock.obj"
+        }
+    ],
+    "shaders": [
+        {
+            "name": "model",
+            "fs": "shader/LearnOpenGL/3_ModelLoading/model.fs",
+            "vs": "shader/LearnOpenGL/3_ModelLoading/model.vs"
+        },
+        {
+            "name": "model",
+            "fs": "shader/LearnOpenGL/3_ModelLoading/model.fs",
+            "vs": "shader/LearnOpenGL/3_ModelLoading/model.vs"
+        }
+    ]
+}

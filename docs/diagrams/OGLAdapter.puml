@@ -1,0 +1,12 @@
+@startuml foo
+File -> InputThread
+InputThread -> MainThread
+MainThread -> MainThread: vertex buffer
+
+activate MainThread #LightBlue
+MainThread -> MainThread: Create VAO
+MainThread -> MainThread: Create VBO
+MainThread -> MainThread: Buffer data
+deactivate MainThread
+
+@enduml

@@ -39,7 +39,8 @@ glm::mat4 Camera::getProjectionMat()
     if (perspective_) {
         return glm::perspective(zoom_, width / height, nearPlane, farPlane);
     } else {
-        return glm::ortho(0.0f, width, 0.0f, height, nearPlane, farPlane);
+        return glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
+        // return glm::ortho(-width, width, -height, height, nearPlane, farPlane);
     }
 }
 
@@ -131,4 +132,9 @@ void Camera::slowDown()
         return;
     }
     speed_ -= 0.0005f;
+}
+
+void Camera::switchProjection()
+{
+    perspective_ = !perspective_;
 }
