@@ -14,7 +14,7 @@ Camera::Camera(glm::vec3 pos)
       theta_(90.0f),
       phi_(270.0f),
       zoom_(45.0f),
-      speed_(0.0005f),
+      speed_(0.0015f),
       perspective_(true)
 {
 }
@@ -86,8 +86,22 @@ void Camera::updateCameraPos(const CameraMovement &mv)
     }
 }
 
+glm::vec3 Camera::getPos()
+{
+    return pos_;
+}
+
+void Camera::switchHold()
+{
+    hold_ = !hold_;
+}
+
 void Camera::updateCameraFace(const int32_t xoffset, const int32_t yoffset)
 {
+    if (hold_) {
+        return;
+    }
+
     constexpr const float sensi = 0.05f;
 
     auto theta = theta_ - yoffset * sensi;

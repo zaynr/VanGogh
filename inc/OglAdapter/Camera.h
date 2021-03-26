@@ -13,7 +13,7 @@ enum class CameraMovement { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN };
 
 class Camera {
 public:
-    Camera(glm::vec3 pos);
+    explicit Camera(glm::vec3 pos);
 
     ~Camera();
 
@@ -35,6 +35,10 @@ public:
 
     void switchProjection();
 
+    void switchHold();
+
+    glm::vec3 getPos();
+
 private:
     void updateCameraProperty();
 
@@ -55,6 +59,7 @@ private:
     float speed_;
     std::chrono::milliseconds timestamp_;
     bool perspective_;
+    bool hold_{false};
 };
 
 }; // namespace VanOGL

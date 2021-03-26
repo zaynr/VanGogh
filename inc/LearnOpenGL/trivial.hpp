@@ -1,9 +1,12 @@
+#pragma once
+
 #include "OglAdapter/GlfwMgr.h"
 #include "OglAdapter/Camera.h"
 #include "OglAdapter/TextureMgr.h"
 #include "OglAdapter/Shader.h"
 #include "OglAdapter/ModelMgr.h"
 #include "OglAdapter/ShaderMgr.h"
+#include "OglAdapter/FrameBuffer.h"
 #include "Util/FileSystem.h"
 #include "Util/GlobalConfig.h"
 
@@ -16,8 +19,105 @@
 using namespace VanOGL;
 using namespace VanUtil;
 
+// global var
+unsigned int uboMatrices;
+
+// meshes
+unsigned int planeVAO;
+// quad
+unsigned int quadVAO;
+unsigned int quadVBO;
+
 // camera
 Camera mainCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+void prepareGlobal()
+{
+    glGenBuffers(1, &uboMatrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    // second param: binding point, fourth param: offset
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+}
+
+void updateGlobalCamera()
+{
+    auto cameraProj = mainCamera.getProjectionMat();
+    auto cameraView = mainCamera.getViewMat();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(cameraProj));
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(cameraView));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+float planeVertices[] = {
+    // positions            // normals         // texcoords
+     25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+    -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+    -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+
+     25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+    -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+     25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+};
+
+void prepareFloor()
+{
+    // plane VAO
+    unsigned int planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glBindVertexArray(0);
+}
+
+void drawFloor(Shader &shader)
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, TextureMgr::instance().getTexture("assets/texture/wood.png"));
+    // floor
+    glm::mat4 model = glm::mat4(1.0f);
+    shader.setMat4("model", model);
+    glBindVertexArray(planeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void renderQuad()
+{
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -55,7 +155,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 void setMouseHidden(void *)
 {
     constexpr const time_t epoch = 1;
-    static bool flip             = false;
+    static bool flip             = true;
     static time_t last           = 0;
     time_t now                   = time(nullptr);
 
@@ -67,6 +167,7 @@ void setMouseHidden(void *)
     if (now - last > epoch) {
         last = now;
         flip = !flip;
+        mainCamera.switchHold();
     }
 }
 
@@ -109,4 +210,8 @@ void prepare()
 
     ShaderMgr::instance().loadShaders();
     ModelMgr::instance().loadModels();
+    TextureMgr::instance().loadTextures();
+
+    prepareGlobal();
+    prepareFloor();
 }

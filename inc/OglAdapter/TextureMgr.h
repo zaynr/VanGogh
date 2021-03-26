@@ -1,5 +1,6 @@
 #pragma once
-#include <glad/glad.h>
+
+#include "OglAdapter/BasicData.h"
 
 #include <string>
 #include <cstdint>
@@ -7,37 +8,40 @@
 
 namespace VanOGL {
 
-enum class TextureType {
-    AO,
-    Albedo,
-    Diffuse,
-    Height,
-    Metallic,
-    Normal,
-    Specular,
+enum TextureType {
+    TEXTURE_AO,
+    TEXTURE_Albedo,
+    TEXTURE_Diffuse,
+    TEXTURE_Height,
+    TEXTURE_Metallic,
+    TEXTURE_Normal,
+    TEXTURE_Specular,
+
+    TEXTURE_BUTT,
 };
 
 class TextureMgr {
-public:
-    struct TextureTraits {
-        GLuint id_{0};
-        TextureType type;
-    };
-
 public:
     static TextureMgr &instance();
 
     ~TextureMgr();
 
+    int32_t loadTextures();
+
+    GLuint getTexture(const std::string &path);
+
+    GLuint load(const std::string &path, const std::string &type);
+
     GLuint load(const std::string &path, const TextureType type);
 
-    static std::string texTypeDic(const TextureType type);
+    std::string texTypeDic(const TextureType type);
 
 private:
     TextureMgr();
 
 private:
-    std::map<std::string, TextureTraits> textureMap_;
+    std::map<std::string, Texture> textureMap_;
+    std::string dic_[TEXTURE_BUTT];
 };
 
 }; // namespace VanOGL

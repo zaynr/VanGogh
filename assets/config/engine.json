@@ -16,9 +16,29 @@
             "vs": "shader/LearnOpenGL/3_ModelLoading/model.vs"
         },
         {
-            "name": "model",
-            "fs": "shader/LearnOpenGL/3_ModelLoading/model.fs",
-            "vs": "shader/LearnOpenGL/3_ModelLoading/model.vs"
+            "name": "1_shadow_map",
+            "fs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_map.fs",
+            "vs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_map.vs"
+        },
+        {
+            "name": "1_shadow_dep",
+            "fs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_dep.fs",
+            "vs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_dep.vs"
+        },
+        {
+            "name": "1_shadow_debug",
+            "fs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_debug.fs",
+            "vs": "shader/LearnOpenGL/5_AdvancedLighting/3_Shadow/1_shadow_debug.vs"
+        }
+    ],
+    "textures": [
+        {
+            "type": "texture_diffuse",
+            "path": "assets/texture/wood.png"
+        },
+        {
+            "type": "texture_diffuse",
+            "path": "assets/texture/grass.png"
         }
     ]
 }

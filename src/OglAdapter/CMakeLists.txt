@@ -2,8 +2,6 @@ set(MODULE_NAME ogl_adapter)
 
 set(MODULE_DEPENDENCY
     ${PROJECT_DEPENDENCY}
-    assimp
-    glfw
     util
     )
 

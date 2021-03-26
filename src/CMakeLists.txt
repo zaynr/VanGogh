@@ -12,6 +12,7 @@ set(MODULE_DEPENDENCY
     ${PROJECT_DEPENDENCY}
     assimp
     ogl_adapter
+    shape
     util
     )
 foreach(Demo ${LearnOGLDemos})
@@ -32,4 +33,6 @@ foreach(Demo ${LearnOGLDemos})
 endforeach(Demo)
 
 add_subdirectory(OglAdapter)
+add_subdirectory(Shape)
 add_subdirectory(Util)
+add_subdirectory(Engine)

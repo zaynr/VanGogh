@@ -1,15 +1,27 @@
 #include "OglAdapter/TextureMgr.h"
 #include "Util/DeferGuard.h"
-#include <iostream>
+#include "Util/FileSystem.h"
 
+#include <iostream>
+#include <rapidjson/document.h>
+#include <rapidjson/rapidjson.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 using namespace VanOGL;
 using namespace VanUtil;
+using namespace rapidjson;
+using namespace std;
 
 TextureMgr::TextureMgr()
 {
+    dic_[TextureType::TEXTURE_AO]       = "texture_ao";
+    dic_[TextureType::TEXTURE_Albedo]   = "texture_albedo";
+    dic_[TextureType::TEXTURE_Diffuse]  = "texture_diffuse";
+    dic_[TextureType::TEXTURE_Height]   = "texture_height";
+    dic_[TextureType::TEXTURE_Metallic] = "texture_metallic";
+    dic_[TextureType::TEXTURE_Normal]   = "texture_normal";
+    dic_[TextureType::TEXTURE_Specular] = "texture_specular";
 }
 
 TextureMgr::~TextureMgr()
@@ -23,6 +35,11 @@ TextureMgr &TextureMgr::instance()
 }
 
 GLuint TextureMgr::load(const std::string &path, const TextureType type)
+{
+    return load(path, dic_[type]);
+}
+
+GLuint TextureMgr::load(const std::string &path, const std::string &type)
 {
     auto iter = textureMap_.find(path);
     if (iter != textureMap_.end()) {
@@ -67,20 +84,36 @@ GLuint TextureMgr::load(const std::string &path, const TextureType type)
         return 0;
     }
 
-    textureMap_.emplace(std::make_pair(path, TextureTraits{id, type}));
+    textureMap_.emplace(std::make_pair(path, Texture{id, type}));
     return id;
 }
 
-std::string texTypeDic(const TextureType type)
+std::string TextureMgr::texTypeDic(const TextureType type)
 {
-    using dicType      = std::map<TextureType, std::string>;
-    static dicType dic = {{TextureType::AO, "tex_ao"},
-                          {TextureType::Albedo, "tex_albedo"},
-                          {TextureType::Diffuse, "tex_diffuse"},
-                          {TextureType::Height, "tex_height"},
-                          {TextureType::Metallic, "tex_metallic"},
-                          {TextureType::Normal, "tex_normal"},
-                          {TextureType::Specular, "tex_specular"}};
+    return dic_[type];
+}
 
-    return dic[type];
+int32_t TextureMgr::loadTextures()
+{
+    auto jsonBody = FileSystem::readFileToStr("assets/config/engine.json");
+    auto p        = make_unique<Document>();
+    p->Parse(jsonBody.c_str());
+    auto &doc     = *p;
+    auto &texture = doc["textures"];
+    assert(texture.IsArray());
+    for (SizeType i = 0; i < texture.Size(); i++) {
+        auto path = texture[i]["path"].GetString();
+        auto type = texture[i]["type"].GetString();
+        load(FileSystem::getAbsPath(path), type);
+    }
+    return 0;
+}
+
+GLuint TextureMgr::getTexture(const std::string &path)
+{
+    auto iter = textureMap_.find(FileSystem::getAbsPath(path.c_str()));
+    if (iter == textureMap_.end()) {
+        return 0;
+    }
+    return iter->second.id_;
 }

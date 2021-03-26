@@ -3,7 +3,7 @@ set(MODULE_NAME util)
 set(MODULE_DEPENDENCY
     ${PROJECT_DEPENDENCY}
     assimp
-    glfw
+    nanogui
     )
 
 file(GLOB MODULE_SRC
