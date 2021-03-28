@@ -1,6 +1,7 @@
 # build dir
 .vscode/
 build/
+vs_build/
 output/
 
 # Prerequisites
