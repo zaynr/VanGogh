@@ -55,6 +55,7 @@ set(PROJECT_INC_DIR
     ${CMAKE_HOME_DIRECTORY}/inc
     ${CMAKE_BINARY_DIR}/configuration
     ${CMAKE_HOME_DIRECTORY}/ext/nanogui/include
+    ${CMAKE_HOME_DIRECTORY}/ext/nanogui/ext/nanovg/src
     ${CMAKE_HOME_DIRECTORY}/ext/nanogui/ext/glfw/include
     ${CMAKE_HOME_DIRECTORY}/ext/nanogui/ext/eigen
     ${CMAKE_HOME_DIRECTORY}/ext/assimp/include
